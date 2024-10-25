@@ -1,0 +1,39 @@
+# node.js dependencies
+node_modules/
+
+# yarn cache
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+# Yarn error logs
+yarn-error.log
+
+# dotenv environment variables file
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# editor-specific files
+.vscode/
+.idea/
+*.swp
+
+# build directories
+dist/
+build/
