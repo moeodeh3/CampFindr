@@ -55,7 +55,6 @@ export interface LocalizationPoint {
 }
 
 export interface AvailabilityInput {
-  mapId: number;
   bookingCategoryId: number;
   equipmentCategoryId: number;
   subEquipmentCategoryId: number;
@@ -78,7 +77,11 @@ export interface MapAvailabilities {
 
 export interface AvailabilityResponse {
   mapId: number;
-  mapAvailabilities: number[];
-  resourceAvailabilities: MapAvailabilities;
-  mapLinkAvailabilities: any; // Can be refined based on the actual structure of link availabilities if needed
+  legendDetails: LegendDetails;
+}
+
+export interface LegendDetails {
+    title: string;
+    description: string;
+    imageUrl: string;
 }

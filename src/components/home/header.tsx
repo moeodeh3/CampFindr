@@ -9,8 +9,8 @@ export function Header() {
       </div>
       <div className="flex flex-row space-x-4 items-center">
         <div className="flex flex-row items-center space-x-1">
-            <FontAwesomeIcon icon={faGlobe} />
-            <p className="text-text-primary text-base font-normal">English</p>
+          <FontAwesomeIcon icon={faGlobe} />
+          <p className="text-text-primary text-base font-normal">English</p>
         </div>
         <p className="text-text-primary text-base font-normal">Github</p>
         <p className="text-text-primary text-base font-normal">About</p>

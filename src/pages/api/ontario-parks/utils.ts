@@ -1,32 +1,33 @@
-import { MapLegendEntry } from "../../../hooks/api/ontario-parks/types";
-
-export function formatMapResponse(mapData: MapLegendEntry) {
-  return {
-    map: {
-      mapId: mapData.mapId,
-      versionId: mapData.versionId,
-      versionDate: mapData.versionDate,
-      mapType: mapData.mapType,
-      isDisabled: mapData.isDisabled,
-      xDimension: mapData.xDimension,
-      yDimension: mapData.yDimension,
-      localizedValues: mapData.localizedValues,
-      resourceLocationId: mapData.resourceLocationId,
-      mapResources: mapData.mapResources,
-      mapAccessPointResources: mapData.mapAccessPointResources,
-      mapLegendItems: mapData.mapLegendItems,
-      mapLinks: mapData.mapLinks,
-      mapLabels: mapData.mapLabels,
-      parentMaps: mapData.parentMaps,
-      mapGlobalStyleLegends: mapData.mapGlobalStyleLegends,
-      parentTransactionLocationId: mapData.parentTransactionLocationId,
-      defaultResultsView: mapData.defaultResultsView,
-      transactionLocationTypes: mapData.transactionLocationTypes,
-    },
-    mapImageUrls: {
-      "en-CA": `https://reservations.ontarioparks.ca/images/${mapData.localizedValues[0].mapImageUid}.png`,
-      "fr-CA": `https://reservations.ontarioparks.ca/images/${mapData.localizedValues[1].mapImageUid}.png`,
-    },
-    hierarchyToMap: null,
-  };
+export interface OntarioAvailabilityResponse {
+  mapId: number;
+  mapAvailabilities: number[];
+  resourceAvailabilities: Record<string, any>;
+  mapLinkAvailabilities: MapLinkAvailabilities;
 }
+
+export interface MapLinkAvailabilities {
+  [mapId: string]: number[];
+}
+
+export interface MapLegendEntry {
+  title: string;
+  description: string;
+  resourceLocationId: number;
+}
+
+export const getQueryParamAsString = (
+  param: string | string[] | undefined,
+  defaultValue: string
+): string => (Array.isArray(param) ? param[0] : param || defaultValue);
+
+export const getChildMapIdsFromData = (
+  data: OntarioAvailabilityResponse
+): number[] => {
+  return data.mapLinkAvailabilities
+    ? Object.keys(data.mapLinkAvailabilities)
+        .filter((id) =>
+          data.mapLinkAvailabilities[id].every((val: number) => val === 0)
+        )
+        .map(Number)
+    : [];
+};

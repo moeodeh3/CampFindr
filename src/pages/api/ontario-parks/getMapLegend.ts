@@ -1,35 +1,25 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { MapLegendResponse } from '../../../hooks/api/ontario-parks/types';
-import { formatMapResponse } from './utils';
+import { NextApiRequest, NextApiResponse } from "next";
+import { MapLegendEntry } from "./utils";
+import {
+  AvailabilityResponse,
+  LegendDetails,
+  MapLegendResponse,
+} from "../../../hooks/api/ontario-parks/types";
+import { fetchImageUrl } from "./getImageUrl";
 
 // in-memory cache
-let cacheData: MapLegendResponse | null = null;
+let legendCache: Map<number, MapLegendEntry> | null = null;
 let cacheTimestamp: number | null = null;
 
-// we have a cache time of 12 hours, as this legend will not update very often
-const CACHE_DURATION = 1000 * 60 * 60 * 12 ; 
+// we have a cache time of 7 days
+const CACHE_DURATION = 1000 * 60 * 60 * 168;
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const { mapId } = req.query;
-
-  // make sure mapId is provided
-  if (!mapId) {
-    return res.status(400).json({ error: "missing mapId parameter" });
-  }
-
+async function fetchMapLegend(): Promise<Map<number, MapLegendEntry>> {
   const now = Date.now();
 
   // we check if the cache is still valid
-  if (cacheData && cacheTimestamp && now - cacheTimestamp < CACHE_DURATION) {
-    const mapData = cacheData.find((entry) => entry.mapId === Number(mapId));
-    if (mapData) {
-      return res.status(200).json(mapData);
-    } else {
-      return res.status(404).json({ error: "Map not found" });
-    }
+  if (legendCache && cacheTimestamp && now - cacheTimestamp < CACHE_DURATION) {
+    return legendCache;
   }
 
   // if cache is not valid, we fetch new data
@@ -39,25 +29,59 @@ export default async function handler(
 
     if (!resp.ok) {
       const errorDetails = await resp.text();
-      console.error(`failed to fetch data, status: ${resp.status}, details: ${errorDetails}`);
-      return res.status(resp.status).json({ error: `failed to fetch data: ${resp.status}` });
+      console.error(
+        `Failed to fetch data: ${resp.status}, details: ${errorDetails}`
+      );
+      throw new Error(`Failed to fetch data: ${resp.status}`);
     }
 
     const data: MapLegendResponse = await resp.json();
 
+    // make the response a map with key being the mapId and values being things we use
+    const legendMap = new Map<number, MapLegendEntry>();
+    data.forEach((entry) => {
+      const localizedEntry = entry.localizedValues.find(
+        (val) => val.cultureName === "en-CA"
+      );
+
+      legendMap.set(entry.mapId, {
+        title: localizedEntry?.title,
+        description: localizedEntry?.description,
+        resourceLocationId: entry.resourceLocationId,
+      });
+    });
+
     // update the cache
-    cacheData = data;
+    legendCache = legendMap;
     cacheTimestamp = now;
 
-    // search for the mapId in the legend
-    const mapData = data.find((entry) => entry.mapId === Number(mapId));
-    if (mapData) {
-      return res.status(200).json(formatMapResponse(mapData));
-    } else {
-      return res.status(404).json({ error: "map not found" });
-    }
+    return legendMap;
   } catch (error) {
-    console.error('Error fetching map legend data:', error);
-    return res.status(500).json({ error: 'Failed to fetch map legend data' });
+    console.error("Error fetching map legend data:", error);
+    throw new Error("Failed to fetch map legend data");
+  }
+}
+
+export async function getMapLegendDetails(
+  mapId: number
+): Promise<LegendDetails | null> {
+  try {
+    const legendMap = await fetchMapLegend();
+    const legendDetails = legendMap.get(mapId);
+
+    if (legendDetails) {
+      const imageUrl = await fetchImageUrl(legendDetails.resourceLocationId);
+
+      return {
+        title: legendDetails.title,
+        description: legendDetails.description,
+        imageUrl: imageUrl,
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error fetching map legend details:", error);
+    return null;
   }
 }

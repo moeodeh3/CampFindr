@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CampCard } from "../components/home/camp-card";
 import { Header } from "../components/home/header";
 import { SearchBar } from "../components/home/search-bar";
 import {
   DrivingDistanceOption,
   DropdownOption,
+  formatAvailabilityInput,
   PartySizeOption,
 } from "../components/home/utils";
+import { useOntarioParksAvailabilityQuery } from "../hooks/ontario-parks/query";
+import { AvailabilityInput } from "../hooks/api/ontario-parks/types";
+import { onLoadable } from "../hooks/api/query";
+import { SearchResults } from "../components/home/search-results";
 
 export default function Home() {
   const [activeDropdown, setActiveDropdown] = useState<DropdownOption | null>(
@@ -18,6 +23,47 @@ export default function Home() {
     DrivingDistanceOption | ""
   >("");
   const [partySize, setPartySize] = useState<PartySizeOption | "">("");
+
+  const [availabilityInput, setAvailabilityInput] =
+    useState<AvailabilityInput | null>(null);
+
+  const [isSearching, setIsSearching] = useState(false);
+
+  const availabilityLoadable = useOntarioParksAvailabilityQuery(
+    availabilityInput
+      ? {
+          ...availabilityInput,
+          cartUid: "uid123",
+          cartTransactionUid: "trans123",
+          bookingUid: "booking123",
+        }
+      : null,
+    { enabled: !!availabilityInput && isSearching }
+  );
+
+  const onSearch = () => {
+    const formattedInput = formatAvailabilityInput(
+      startDate,
+      endDate,
+      partySize
+    );
+    if (formattedInput) {
+      setAvailabilityInput(formattedInput);
+      setIsSearching(true);
+    }
+  };
+
+  useEffect(() => {
+    onLoadable(availabilityLoadable)(
+      () => null,
+      () => {
+        setIsSearching(false);
+      },
+      () => {
+        setIsSearching(false);
+      }
+    );
+  }, [availabilityLoadable]);
 
   return (
     <div className="min-h-screen h-full bg-background overflow-x-hidden">
@@ -36,14 +82,12 @@ export default function Home() {
             setDrivingDistance(distance)
           }
           handlePartySize={(size: PartySizeOption) => setPartySize(size)}
+          onSearch={onSearch}
         />
-        <CampCard
-          image="https://cdn.discordapp.com/attachments/714693943668899861/1299417585636343959/Ontario-Backpacking-Trails-Eastern-Pines-in-Algonquin-1024x684.png?ex=671d206e&is=671bceee&hm=a6a36643e821bc029e9f8c1183cffef53594fa0ad29116eca725ee73ed8b8559&" 
-          title="Sunny Campground"
-          park="Grand Park"
-          cost={120}
-          rating={4.5}
-        />{" "}
+        <SearchResults
+          availabilityLoadable={availabilityLoadable}
+          isSearching={isSearching}
+        />
       </main>
     </div>
   );

@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { colors } from "../../design/constant";
 import { BaseButton } from "../button/base-button";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "../font-awesome-icon";
-import DatePicker from "react-datepicker"; 
-import "react-datepicker/dist/react-datepicker.css"; 
-import { DrivingDistanceOption, DropdownOption, PartySizeOption } from "./utils";
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import {
+  DrivingDistanceOption,
+  DropdownOption,
+  PartySizeOption,
+} from "./utils";
 
 interface SearchBarProps {
   activeDropdown: DropdownOption | null;
@@ -19,39 +22,80 @@ interface SearchBarProps {
   handleEndDate: (date: Date) => void;
   handleDrivingDistance: (distance: DrivingDistanceOption) => void;
   handlePartySize: (size: PartySizeOption) => void;
+  onSearch: () => void;
 }
 
 export function SearchBar(props: SearchBarProps) {
-  const { 
-    activeDropdown, 
-    startDate, 
-    endDate, 
-    drivingDistance, 
-    partySize, 
-    handleDropdown, 
-    handleStartDate, 
-    handleEndDate, 
-    handleDrivingDistance, 
-    handlePartySize 
+  const {
+    activeDropdown,
+    startDate,
+    endDate,
+    drivingDistance,
+    partySize,
+    handleDropdown,
+    handleStartDate,
+    handleEndDate,
+    handleDrivingDistance,
+    handlePartySize,
+    onSearch,
   } = props;
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        handleDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [handleDropdown]);
 
   const toggleDropdown = (item: DropdownOption) => {
     handleDropdown(activeDropdown === item ? null : item);
   };
 
+  const handleSelect = <T,>(
+    dropdownType: DropdownOption,
+    value: T,
+    updateFunction: (val: T) => void
+  ) => {
+    updateFunction(value);
+    handleDropdown(null);
+  };
+
   return (
     <div className="flex w-full h-16 items-center justify-center">
-      <div className="flex w-[75%] md:w-[60%] h-full rounded-full border-2 border-primary p-4 items-center justify-between">
+      <div
+        ref={dropdownRef}
+        className="flex w-[75%] md:w-[60%] h-full rounded-full border-2 border-primary p-4 items-center justify-between"
+      >
         <SearchItemWithDropdown
           title="Where"
           description={drivingDistance ? drivingDistance : "Driving distance"}
-          className="text-left md:w-[20%]" 
+          className="text-left md:w-[20%]"
           isActive={activeDropdown === "Where"}
           toggleDropdown={() => toggleDropdown("Where")}
           renderDropdown={() => (
             <DropdownList
-              items={["1 hour", "2 hours", "3 hours", "4+ hours"] as DrivingDistanceOption[]}
-              onSelect={(item: DrivingDistanceOption) => handleDrivingDistance(item)} 
+              items={
+                [
+                  "1 hour",
+                  "2 hours",
+                  "3 hours",
+                  "4+ hours",
+                ] as DrivingDistanceOption[]
+              }
+              onSelect={(item: DrivingDistanceOption) =>
+                handleSelect("Where", item, handleDrivingDistance)
+              }
             />
           )}
         />
@@ -59,15 +103,19 @@ export function SearchBar(props: SearchBarProps) {
         <div className="hidden md:flex flex-1 justify-between items-center space-x-[5%] h-full">
           <SearchItemWithDropdown
             title="Check in"
-            description={startDate ? startDate.toLocaleDateString() : "Add dates"}
+            description={
+              startDate ? startDate.toLocaleDateString() : "Add dates"
+            }
             isActive={activeDropdown === "Check in"}
             hasDivider={true}
-            className="w-[20%]" 
+            className="w-[20%]"
             toggleDropdown={() => toggleDropdown("Check in")}
             renderDropdown={() => (
               <DatePicker
                 selected={startDate}
-                onChange={(date: Date) => handleStartDate(date)}
+                onChange={(date: Date) =>
+                  handleSelect("Check in", date, handleStartDate)
+                }
                 inline
               />
             )}
@@ -77,12 +125,14 @@ export function SearchBar(props: SearchBarProps) {
             description={endDate ? endDate.toLocaleDateString() : "Add dates"}
             isActive={activeDropdown === "Check out"}
             hasDivider={true}
-            className="w-[20%]" 
+            className="w-[20%]"
             toggleDropdown={() => toggleDropdown("Check out")}
             renderDropdown={() => (
               <DatePicker
                 selected={endDate}
-                onChange={(date: Date) => handleEndDate(date)}
+                onChange={(date: Date) =>
+                  handleSelect("Check out", date, handleEndDate)
+                }
                 inline
               />
             )}
@@ -92,19 +142,28 @@ export function SearchBar(props: SearchBarProps) {
             description={partySize ? partySize : "Add guests"}
             isActive={activeDropdown === "Who"}
             hasDivider={true}
-            className="w-[20%]" 
+            className="w-[20%]"
             toggleDropdown={() => toggleDropdown("Who")}
             renderDropdown={() => (
               <DropdownList
-                items={["1 guest", "2 guests", "3 guests", "4 guests"] as PartySizeOption[]}
-                onSelect={(item: PartySizeOption) => handlePartySize(item)} 
+                items={
+                  [
+                    "1 guest",
+                    "2 guests",
+                    "3 guests",
+                    "4 guests",
+                  ] as PartySizeOption[]
+                }
+                onSelect={(item: PartySizeOption) =>
+                  handleSelect("Who", item, handlePartySize)
+                }
               />
             )}
           />
         </div>
 
         <div className="pl-4">
-          <BaseButton onClick={() => console.log("Search triggered", { startDate, endDate, drivingDistance, partySize })}>
+          <BaseButton onClick={onSearch}>
             <div className="flex items-center justify-center bg-primary rounded-full p-2.5">
               <FontAwesomeIcon
                 icon={faMagnifyingGlass}
@@ -130,44 +189,52 @@ interface SearchItemWithDropdownProps {
 }
 
 const SearchItemWithDropdown = ({
-    title,
-    description,
-    className = "",
-    isActive,
-    hasDivider,
-    toggleDropdown,
-    renderDropdown,
-  }: SearchItemWithDropdownProps) => {
-    return (
-      <div className={`relative flex items-center justify-center h-full space-x-[10%] ${className}`}>
-        {hasDivider && <VerticalSpacer />}
-        <BaseButton onClick={toggleDropdown}>
-          <div className="flex flex-col space-y-1">
-            <p className="font-semibold text-sm text-text-primary truncate whitespace-nowrap overflow-hidden">
-              {title}
-            </p>
-            <p className="font-light text-xs text-text-primary truncate whitespace-nowrap overflow-hidden">
-              {description}
-            </p>
-          </div>
-        </BaseButton>
-        {isActive && (
-          <div className="absolute top-14 left-0 w-full bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-            {renderDropdown()}
-          </div>
-        )}
-      </div>
-    );
-  };
+  title,
+  description,
+  className = "",
+  isActive,
+  hasDivider,
+  toggleDropdown,
+  renderDropdown,
+}: SearchItemWithDropdownProps) => {
+  return (
+    <div
+      className={`relative flex items-center justify-center h-full space-x-[10%] ${className}`}
+    >
+      {hasDivider && <VerticalSpacer />}
+      <BaseButton onClick={toggleDropdown}>
+        <div className="flex flex-col space-y-1">
+          <p className="font-semibold text-sm text-text-primary truncate whitespace-nowrap overflow-hidden">
+            {title}
+          </p>
+          <p className="font-light text-xs text-text-primary truncate whitespace-nowrap overflow-hidden">
+            {description}
+          </p>
+        </div>
+      </BaseButton>
+      {isActive && (
+        <div className="absolute top-14 left-0 w-full bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+          {renderDropdown()}
+        </div>
+      )}
+    </div>
+  );
+};
 
-const DropdownList = ({ items, onSelect }: { items: string[], onSelect: (item: string) => void }) => {
+const DropdownList = ({
+  items,
+  onSelect,
+}: {
+  items: string[];
+  onSelect: (item: string) => void;
+}) => {
   return (
     <ul className="py-2">
       {items.map((item, index) => (
-        <li 
-          key={index} 
+        <li
+          key={index}
           className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-          onClick={() => onSelect(item)} 
+          onClick={() => onSelect(item)}
         >
           {item}
         </li>
@@ -183,5 +250,3 @@ const VerticalSpacer = () => {
     </div>
   );
 };
-
-const GuestSelector = () => <div className="p-4">[Guest Selector Component]</div>;
