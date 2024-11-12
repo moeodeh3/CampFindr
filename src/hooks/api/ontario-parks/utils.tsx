@@ -1,11 +1,6 @@
+import { AvailabilityResponse } from "@packages/types";
 import { handleJSONResponse } from "../utils";
-import {
-  AvailabilityInput,
-  AvailabilityResponse,
-  MapLegendInput,
-  MapLegendResponse,
-} from "./types";
-
+import { AvailabilityInput } from "./types";
 
 export async function getOntarioParksAvailability(
   props: AvailabilityInput
@@ -23,7 +18,7 @@ export async function getOntarioParksAvailability(
   } = props;
 
   try {
-    const url = `/api/ontario-parks/getAvailability?bookingCategoryId=${bookingCategoryId}&equipmentCategoryId=${equipmentCategoryId}&subEquipmentCategoryId=${subEquipmentCategoryId}&cartUid=${cartUid}&cartTransactionUid=${cartTransactionUid}&bookingUid=${bookingUid}&startDate=${startDate}&endDate=${endDate}&partySize=${partySize}`;
+    const url = `/api/ontario-parks/availability/getAvailability?bookingCategoryId=${bookingCategoryId}&equipmentCategoryId=${equipmentCategoryId}&subEquipmentCategoryId=${subEquipmentCategoryId}&cartUid=${cartUid}&cartTransactionUid=${cartTransactionUid}&bookingUid=${bookingUid}&startDate=${startDate}&endDate=${endDate}&partySize=${partySize}`;
 
     const resp = await fetch(url, {
       method: "GET",

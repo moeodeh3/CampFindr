@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { AvailabilityResponse } from "../../hooks/api/ontario-parks/types";
 import { Loadable, onLoadable } from "../../hooks/api/query";
 import { CampCard } from "./camp-card";
+import { AvailabilityResponse } from "@packages/types";
+import router from "next/router";
 
 interface SearchResultsProps {
   availabilityLoadable: Loadable<AvailabilityResponse[]>;
@@ -12,6 +12,10 @@ export function SearchResults({
   availabilityLoadable,
   isSearching,
 }: SearchResultsProps) {
+  const handleCardPressed = (mapId: number) => {
+    router.push(`/resourceDetails?mapId=${mapId}`);
+  };
+
   return onLoadable(availabilityLoadable)(
     () =>
       isSearching ? (
@@ -27,11 +31,13 @@ export function SearchResults({
           {availabilityData.map((availability) => (
             <CampCard
               key={availability.mapId}
+              mapId={availability.mapId}
               image={availability.legendDetails.imageUrl}
               title={availability.legendDetails.title}
               park={availability.legendDetails.description}
               cost={"-"}
               rating={"-"}
+              onPress={handleCardPressed}
             />
           ))}
         </div>

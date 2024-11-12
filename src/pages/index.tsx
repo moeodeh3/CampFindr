@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { CampCard } from "../components/home/camp-card";
 import { Header } from "../components/home/header";
 import { SearchBar } from "../components/home/search-bar";
 import {
