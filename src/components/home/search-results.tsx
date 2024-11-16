@@ -1,21 +1,19 @@
 import { Loadable, onLoadable } from "../../hooks/api/query";
 import { CampCard } from "./camp-card";
 import { AvailabilityResponse } from "@packages/types";
-import router from "next/router";
 
 interface SearchResultsProps {
   availabilityLoadable: Loadable<AvailabilityResponse[]>;
   isSearching: boolean;
+  onCardPressed: (mapId: number) => void;
 }
 
 export function SearchResults({
   availabilityLoadable,
   isSearching,
+  onCardPressed,
 }: SearchResultsProps) {
-  const handleCardPressed = (mapId: number) => {
-    router.push(`/resourceDetails?mapId=${mapId}`);
-  };
-
+  
   return onLoadable(availabilityLoadable)(
     () =>
       isSearching ? (
@@ -26,18 +24,19 @@ export function SearchResults({
 
     () => null,
     (availabilityData) => {
+      console.log(availabilityData)
       return (
         <div className="flex flex-wrap justify-start gap-8 px-8">
           {availabilityData.map((availability) => (
             <CampCard
               key={availability.mapId}
-              mapId={availability.mapId}
+              resourceLocationId={availability.legendDetails.resourceLocationId}
               image={availability.legendDetails.imageUrl}
               title={availability.legendDetails.title}
               park={availability.legendDetails.description}
               cost={"-"}
               rating={"-"}
-              onPress={handleCardPressed}
+              onPress={onCardPressed}
             />
           ))}
         </div>

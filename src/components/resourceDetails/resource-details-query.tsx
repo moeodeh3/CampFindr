@@ -1,15 +1,23 @@
+import { useOntarioParksResourceDetailsQuery } from "src/hooks/ontario-parks/query";
 import ResourceDetails from "./resource-details";
 
 interface ResourceDetailsWithQueryProps {
-  mapId: number;
+  resourceLocationId: number;
 }
 
 export default function ResourceDetailsWithQuery(
   props: ResourceDetailsWithQueryProps
 ) {
-  const { mapId } = props;
+  const { resourceLocationId } = props;
 
-  // make query here
+  const resourceDetailsLoadable = useOntarioParksResourceDetailsQuery(
+    { resourceLocationId },
+    { enabled: true }
+  );
 
-  return <ResourceDetails />;
+  return (
+    <div className="flex min-h-full w-full">
+      <ResourceDetails resourceDetailsLoadable={resourceDetailsLoadable} />
+    </div>
+  );
 }

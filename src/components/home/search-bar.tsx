@@ -10,6 +10,7 @@ import {
   DropdownOption,
   PartySizeOption,
 } from "./utils";
+import { VerticalSpacer } from "../spacer/vertical-spacer";
 
 interface SearchBarProps {
   activeDropdown: DropdownOption | null;
@@ -240,13 +241,5 @@ const DropdownList = ({
         </li>
       ))}
     </ul>
-  );
-};
-
-const VerticalSpacer = () => {
-  return (
-    <div className="flex h-full">
-      <div className="w-[1px] bg-primary h-full" />
-    </div>
   );
 };

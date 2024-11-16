@@ -24,6 +24,7 @@ function generateCacheKey(url: string, queryParams: any): string {
   return crypto.createHash("md5").update(`${url}?${queryString}`).digest("hex");
 }
 
+//TODO: Move this to packages and use this as query input
 export interface FetchAvailabilityInput {
   mapId: number; // The main park or map identifier, defaults to all parks ID (-2147483464)
   bookingCategoryId: string; // Default category for campsite reservations

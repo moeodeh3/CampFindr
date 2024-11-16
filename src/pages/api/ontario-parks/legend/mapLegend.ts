@@ -1,15 +1,15 @@
-import { LegendDetails, MapLegendEntry } from "@packages/types";
+import { LegendDetails } from "@packages/types";
 import { getImageURL } from "./imageUrl";
-import { MapLegendResponse } from "./types";
+import { MapLegendEntry, MapLegendResponse } from "./types";
 
 // in-memory cache
-let legendCache: Map<number, MapLegendEntry> | null = null;
+let legendCache: Map<number, LegendDetails> | null = null;
 let cacheTimestamp: number | null = null;
 
 // we have a cache time of 7 days
 const CACHE_DURATION = 1000 * 60 * 60 * 168;
 
-async function fetchMapLegend(): Promise<Map<number, MapLegendEntry>> {
+async function fetchMapLegend(): Promise<Map<number, LegendDetails>> {
   const now = Date.now();
 
   // we check if the cache is still valid
@@ -33,16 +33,16 @@ async function fetchMapLegend(): Promise<Map<number, MapLegendEntry>> {
     const data: MapLegendResponse = await resp.json();
 
     // make the response a map with key being the mapId and values being things we use
-    const legendMap = new Map<number, MapLegendEntry>();
+    const legendMap = new Map<number, LegendDetails>();
     data.forEach((entry) => {
       const localizedEntry = entry.localizedValues.find(
         (val) => val.cultureName === "en-CA"
       );
 
       legendMap.set(entry.mapId, {
+        resourceLocationId: entry.resourceLocationId,
         title: localizedEntry?.title,
         description: localizedEntry?.description,
-        resourceLocationId: entry.resourceLocationId,
       });
     });
 
@@ -68,6 +68,7 @@ export async function getMapLegendDetails(
       const imageUrl = await getImageURL(legendDetails.resourceLocationId);
 
       return {
+        resourceLocationId: legendDetails.resourceLocationId,
         title: legendDetails.title,
         description: legendDetails.description,
         imageUrl: imageUrl,

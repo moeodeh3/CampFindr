@@ -11,6 +11,7 @@ import { useOntarioParksAvailabilityQuery } from "../hooks/ontario-parks/query";
 import { AvailabilityInput } from "../hooks/api/ontario-parks/types";
 import { onLoadable } from "../hooks/api/query";
 import { SearchResults } from "../components/home/search-results";
+import router from "next/router";
 
 export default function Home() {
   const [activeDropdown, setActiveDropdown] = useState<DropdownOption | null>(
@@ -39,6 +40,10 @@ export default function Home() {
       : null,
     { enabled: !!availabilityInput && isSearching }
   );
+
+  const handleCardPressed = (mapId: number) => {
+    router.push(`/resourceDetails?resourceLocationId=${mapId}`);
+  };
 
   const onSearch = () => {
     const formattedInput = formatAvailabilityInput(
@@ -86,6 +91,7 @@ export default function Home() {
         <SearchResults
           availabilityLoadable={availabilityLoadable}
           isSearching={isSearching}
+          onCardPressed={handleCardPressed}
         />
       </main>
     </div>

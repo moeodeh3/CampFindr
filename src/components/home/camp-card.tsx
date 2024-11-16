@@ -5,7 +5,7 @@ import { colors } from "../../design/constant";
 import { BaseButton } from "../button/base-button";
 
 interface CampCardProps {
-  mapId: number;
+  resourceLocationId: number;
   image: string;
   title: string;
   park: string;
@@ -15,10 +15,10 @@ interface CampCardProps {
 }
 
 export function CampCard(props: CampCardProps) {
-  const { mapId, image, title, park, cost, rating, onPress } = props;
+  const { resourceLocationId, image, title, park, cost, rating, onPress } = props;
 
   return (
-    <BaseButton onClick={() => onPress(mapId)}>
+    <BaseButton onClick={() => onPress(resourceLocationId)}>
       <div className="flex flex-col w-60 space-y-2">
         <div className="relative w-60 h-60">
           <Image
