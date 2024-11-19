@@ -16,7 +16,7 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@packages/*": ["src/packages/*"]
+      "@packages/*": ["packages/*"]
     }
   },
   "exclude": ["node_modules"],

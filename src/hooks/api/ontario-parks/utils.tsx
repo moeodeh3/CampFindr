@@ -2,9 +2,11 @@ import {
   AvailabilityResponse,
   ResourceEntry,
   ResourceInput,
-} from "@packages/types";
-import { handleJSONResponse } from "../utils";
-import { AvailabilityInput } from "./types";
+} from '@packages/types';
+import { handleJSONResponse } from '../utils';
+import { AvailabilityInput } from './types';
+
+const BASE_URL = process.env.BACKEND_URL || 'http://localhost:4000';
 
 export async function getOntarioParksAvailability(
   props: AvailabilityInput
@@ -22,18 +24,18 @@ export async function getOntarioParksAvailability(
   } = props;
 
   try {
-    const url = `/api/ontario-parks/availability/getAvailability?bookingCategoryId=${bookingCategoryId}&equipmentCategoryId=${equipmentCategoryId}&subEquipmentCategoryId=${subEquipmentCategoryId}&cartUid=${cartUid}&cartTransactionUid=${cartTransactionUid}&bookingUid=${bookingUid}&startDate=${startDate}&endDate=${endDate}&partySize=${partySize}`;
+    const url = `${BASE_URL}/api/availability?bookingCategoryId=${bookingCategoryId}&equipmentCategoryId=${equipmentCategoryId}&subEquipmentCategoryId=${subEquipmentCategoryId}&cartUid=${cartUid}&cartTransactionUid=${cartTransactionUid}&bookingUid=${bookingUid}&startDate=${startDate}&endDate=${endDate}&partySize=${partySize}`;
 
     const resp = await fetch(url, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
-    return handleJSONResponse(resp);
+    return await handleJSONResponse(resp);
   } catch (error) {
-    console.error("Error fetching availability data", error);
+    console.error('Error fetching availability data:', error);
     return null;
   }
 }
@@ -44,17 +46,17 @@ export async function getOntarioParksResourceDetails(
   const { resourceLocationId } = props;
 
   try {
-    const url = `/api/ontario-parks/resource-details/getResourceDetails?resourceLocationId=${resourceLocationId}`;
+    const url = `${BASE_URL}/api/resource/${resourceLocationId}`;
     const resp = await fetch(url, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
-    return handleJSONResponse(resp);
+    return await handleJSONResponse(resp);
   } catch (error) {
-    console.error("Error fetching availability data", error);
+    console.error('Error fetching resource details:', error);
     return null;
   }
 }
