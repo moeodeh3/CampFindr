@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { Header } from "../components/home/header";
-import { SearchBar } from "../components/home/search-bar";
+import { useEffect, useState } from 'react';
+import { Header } from '../components/home/header';
+import { SearchBar } from '../components/home/search-bar';
 import {
   DrivingDistanceOption,
   DropdownOption,
   formatAvailabilityInput,
   PartySizeOption,
-} from "../components/home/utils";
-import { useOntarioParksAvailabilityQuery } from "../hooks/ontario-parks/query";
-import { AvailabilityInput } from "../hooks/api/ontario-parks/types";
-import { onLoadable } from "../hooks/api/query";
-import { SearchResults } from "../components/home/search-results";
-import router from "next/router";
+} from '../components/home/utils';
+import { useOntarioParksAvailabilityQuery } from '../hooks/ontario-parks/query';
+import { onLoadable } from '../hooks/api/query';
+import { SearchResults } from '../components/home/search-results';
+import router from 'next/router';
+import { useAvailability } from 'src/providers/availabilityContext';
 
 export default function Home() {
   const [activeDropdown, setActiveDropdown] = useState<DropdownOption | null>(
@@ -20,12 +20,11 @@ export default function Home() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [drivingDistance, setDrivingDistance] = useState<
-    DrivingDistanceOption | ""
-  >("");
-  const [partySize, setPartySize] = useState<PartySizeOption | "">("");
+    DrivingDistanceOption | ''
+  >('');
+  const [partySize, setPartySize] = useState<PartySizeOption | ''>('');
 
-  const [availabilityInput, setAvailabilityInput] =
-    useState<AvailabilityInput | null>(null);
+  const { availabilityInput, setAvailabilityInput } = useAvailability();
 
   const [isSearching, setIsSearching] = useState(false);
 
@@ -33,16 +32,18 @@ export default function Home() {
     availabilityInput
       ? {
           ...availabilityInput,
-          cartUid: "uid123",
-          cartTransactionUid: "trans123",
-          bookingUid: "booking123",
+          cartUid: 'uid123',
+          cartTransactionUid: 'trans123',
+          bookingUid: 'booking123',
         }
       : null,
     { enabled: !!availabilityInput && isSearching }
   );
 
-  const handleCardPressed = (mapId: number) => {
-    router.push(`/resourceDetails?resourceLocationId=${mapId}`);
+  const handleCardPressed = (mapId: number, resourceLocationId: number) => {
+    router.push(
+      `/resourceDetails?mapId=${mapId}&resourceLocationId=${resourceLocationId}`
+    );
   };
 
   const onSearch = () => {

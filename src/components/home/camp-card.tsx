@@ -1,24 +1,34 @@
-import { FontAwesomeIcon } from "../font-awesome-icon";
-import { faGlobe, faStar } from "@fortawesome/free-solid-svg-icons";
-import Image from "next/image";
-import { colors } from "../../design/constant";
-import { BaseButton } from "../button/base-button";
+import { FontAwesomeIcon } from '../font-awesome-icon';
+import { faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
+import Image from 'next/image';
+import { colors } from '../../design/constant';
+import { BaseButton } from '../button/base-button';
 
 interface CampCardProps {
+  mapId: number;
   resourceLocationId: number;
   image: string;
   title: string;
   park: string;
   cost: string;
   rating: string;
-  onPress: (mapId: number) => void;
+  onPress: (mapId: number, resourceLocationId: number) => void;
 }
 
 export function CampCard(props: CampCardProps) {
-  const { resourceLocationId, image, title, park, cost, rating, onPress } = props;
+  const {
+    mapId,
+    resourceLocationId,
+    image,
+    title,
+    park,
+    cost,
+    rating,
+    onPress,
+  } = props;
 
   return (
-    <BaseButton onClick={() => onPress(resourceLocationId)}>
+    <BaseButton onClick={() => onPress(mapId, resourceLocationId)}>
       <div className="flex flex-col w-60 space-y-2">
         <div className="relative w-60 h-60">
           <Image
@@ -26,7 +36,7 @@ export function CampCard(props: CampCardProps) {
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, 240px"
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: 'cover' }}
             className="rounded-xl"
           />
         </div>

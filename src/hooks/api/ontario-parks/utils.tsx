@@ -12,6 +12,7 @@ export async function getOntarioParksAvailability(
   props: AvailabilityInput
 ): Promise<AvailabilityResponse[] | null> {
   const {
+    mapId,
     bookingCategoryId,
     equipmentCategoryId,
     subEquipmentCategoryId,
@@ -24,7 +25,9 @@ export async function getOntarioParksAvailability(
   } = props;
 
   try {
-    const url = `${BASE_URL}/api/availability?bookingCategoryId=${bookingCategoryId}&equipmentCategoryId=${equipmentCategoryId}&subEquipmentCategoryId=${subEquipmentCategoryId}&cartUid=${cartUid}&cartTransactionUid=${cartTransactionUid}&bookingUid=${bookingUid}&startDate=${startDate}&endDate=${endDate}&partySize=${partySize}`;
+    const url = `${BASE_URL}/api/availability?${
+      mapId ? `mapId=${mapId}&` : ''
+    }bookingCategoryId=${bookingCategoryId}&equipmentCategoryId=${equipmentCategoryId}&subEquipmentCategoryId=${subEquipmentCategoryId}&cartUid=${cartUid}&cartTransactionUid=${cartTransactionUid}&bookingUid=${bookingUid}&startDate=${startDate}&endDate=${endDate}&partySize=${partySize}`;
 
     const resp = await fetch(url, {
       method: 'GET',

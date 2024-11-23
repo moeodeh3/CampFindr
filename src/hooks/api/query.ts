@@ -39,7 +39,7 @@ export type QueryResult<TData extends DefinedType> = {
 };
 
 export const makeLoadable = <TData extends DefinedType = never>(
-  data: TData,
+  data: TData
 ): Loadable<TData> => ({
   data,
   loading: false,
@@ -68,7 +68,7 @@ export const makeLoadableError = <
 export const mapLoadable =
   <TData extends DefinedType>(loadable: Loadable<TData>) =>
   <TMapped extends DefinedType>(
-    map: (data: TData) => TMapped,
+    map: (data: TData) => TMapped
   ): Loadable<TMapped> => {
     if (loadable.success) {
       return makeLoadable(map(loadable.data));
@@ -79,8 +79,31 @@ export const mapLoadable =
     }
   };
 
+export const sequenceLoadables = <TData extends DefinedType>(
+  traversable: Loadable<TData>[]
+): Loadable<TData[]> =>
+  traversable.length === 0
+    ? makeLoadable([])
+    : applyLoadable(sequenceLoadables(traversable.slice(1)))(
+        mapLoadable(traversable[0]!)(append)
+      );
+
+export const applyLoadable =
+  <TData extends DefinedType>(loadable: Loadable<TData>) =>
+  <TReturn extends DefinedType>(
+    f: Loadable<(data: TData) => TReturn>
+  ): Loadable<TReturn> => {
+    if (loadable.success && f.success) {
+      return makeLoadable(f.data(loadable.data));
+    } else if (loadable.error || f.error) {
+      return makeLoadableError();
+    } else {
+      return makeLoadableLoading();
+    }
+  };
+
 export function loadDataFromQuery<TData extends DefinedType>(
-  query: QueryResult<TData>,
+  query: QueryResult<TData>
 ): Loadable<TData>;
 
 export function loadDataFromQuery<
@@ -88,7 +111,7 @@ export function loadDataFromQuery<
   TReturn extends DefinedType,
 >(
   query: QueryResult<TData>,
-  extractor: (data: TData) => TReturn,
+  extractor: (data: TData) => TReturn
 ): Loadable<TReturn>;
 
 export function loadDataFromQuery<
@@ -96,7 +119,7 @@ export function loadDataFromQuery<
   TMapped extends DefinedType,
 >(
   query: QueryResult<TData>,
-  extractor?: (data: TData) => TMapped,
+  extractor?: (data: TData) => TMapped
 ): Loadable<TData> | Loadable<TMapped> {
   const { data, isPending, isSuccess } = query;
   if (isSuccess && data !== undefined) {
@@ -117,10 +140,38 @@ export const onLoadable =
   <TLoading, TError, TSuccess>(
     onLoading: () => TLoading,
     onError: () => TError,
-    onSuccess: (data: TData) => TSuccess,
+    onSuccess: (data: TData) => TSuccess
   ): TLoading | TError | TSuccess =>
     loadable.loading
       ? onLoading()
       : loadable.error
-      ? onError()
-      : onSuccess(loadable.data);
+        ? onError()
+        : onSuccess(loadable.data);
+
+type Defined<T> = T extends undefined ? never : T;
+
+export const composeLoadables =
+  <
+    TData extends DefinedType,
+    TLoadable extends Loadable<TData>,
+    TList extends TLoadable[],
+  >(
+    ...loadables: [...TList]
+  ) =>
+  <TComposed extends DefinedType>(
+    compose: (
+      ...data: {
+        [Index in keyof TList]: Defined<TList[Index]['data']>;
+      }
+    ) => TComposed
+  ): Loadable<TComposed> =>
+    mapLoadable(sequenceLoadables(loadables))((data) =>
+      compose(...(data as any))
+    );
+
+const append =
+  <T>(item: T) =>
+  (list: T[]) =>
+    [item].concat(list);
+
+export const tuple = <T extends any[]>(...x: T) => x;

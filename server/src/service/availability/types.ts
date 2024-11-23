@@ -1,12 +1,25 @@
+import { LegendDetails } from '../mapLegend/types';
+
+export interface AvailabilityResponse {
+  mapId: number;
+  linksAvailable?: number;
+  legendDetails: LegendDetails | null;
+}
+
 export interface OntarioAvailabilityResponse {
   mapId: number;
   mapAvailabilities: number[];
-  resourceAvailabilities: Record<string, any>;
+  resourceAvailabilities: Resource;
   mapLinkAvailabilities: MapLinkAvailabilities;
 }
 
 export interface MapLinkAvailabilities {
   [mapId: string]: number[];
+}
+
+export interface Resource {
+  availability: number;
+  remainingQuota: number | null;
 }
 
 export interface FetchAvailabilityInput {

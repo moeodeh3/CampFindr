@@ -9,6 +9,7 @@ export interface LegendDetails {
 // Availibility
 export interface AvailabilityResponse {
   mapId: number;
+  linksAvailable?: number;
   legendDetails: LegendDetails;
 }
 
@@ -22,10 +23,16 @@ export interface ResourceEntry {
   fullName: string;
   description: string;
   streetAddress: string;
+  position?: Position;
   website: string;
   city: string;
   region: string;
   regionCode: string;
   country: string;
   phoneNumber: string;
+}
+
+interface Position {
+  latitude: number;
+  longitude: number;
 }

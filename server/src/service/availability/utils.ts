@@ -5,7 +5,24 @@ export const getQueryParamAsString = (
   defaultValue: string
 ): string => (Array.isArray(param) ? param[0] : param || defaultValue);
 
-export const getChildMapIdsFromData = (
+export const getMapIdsFromResourceAvailabilities = (
+  data: OntarioAvailabilityResponse
+): number[] => {
+  if (!data.resourceAvailabilities) {
+    return [];
+  }
+
+  return Object.entries(data.resourceAvailabilities)
+    .filter(([, resources]) => {
+      return (
+        Array.isArray(resources) &&
+        resources.every((resource) => resource.availability === 0)
+      );
+    })
+    .map(([id]) => Number(id));
+};
+
+export const getMapIdsFromMapLinkAvailabilities = (
   data: OntarioAvailabilityResponse
 ): number[] => {
   return data.mapLinkAvailabilities

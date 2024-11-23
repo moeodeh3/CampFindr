@@ -5,9 +5,13 @@ import { fetchMapLegend } from './service/mapLegend/mapLegend.js';
 import { fetchResourceLocations } from './service/resource/resourceLegend.js';
 import resourceRouter from './routes/resource.js';
 import availabilityRouter from './routes/availability.js';
+import dotenv from 'dotenv';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+// load environment variables
+dotenv.config();
 
 // middleware
 app.use(express.json());

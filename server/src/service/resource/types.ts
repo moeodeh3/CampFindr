@@ -6,6 +6,7 @@ export interface ResourceEntry {
   fullName: string;
   description: string;
   streetAddress: string;
+  position?: Position;
   website: string;
   city: string;
   region: string;
@@ -14,7 +15,12 @@ export interface ResourceEntry {
   phoneNumber: string;
 }
 
-export interface ResourceLocationResponse extends Array<ResourceLocation> {}
+export interface Position {
+  latitude: number;
+  longitude: number;
+}
+
+export type ResourceLocationResponse = Array<ResourceLocation>;
 
 export interface ResourceLocation {
   resourceLocationId: number;

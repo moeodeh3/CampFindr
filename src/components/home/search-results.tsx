@@ -1,11 +1,11 @@
-import { Loadable, onLoadable } from "../../hooks/api/query";
-import { CampCard } from "./camp-card";
-import { AvailabilityResponse } from "@packages/types";
+import { Loadable, onLoadable } from '../../hooks/api/query';
+import { CampCard } from './camp-card';
+import { AvailabilityResponse } from '@packages/types';
 
 interface SearchResultsProps {
   availabilityLoadable: Loadable<AvailabilityResponse[]>;
   isSearching: boolean;
-  onCardPressed: (mapId: number) => void;
+  onCardPressed: (mapId: number, resourceLocationId: number) => void;
 }
 
 export function SearchResults({
@@ -13,7 +13,6 @@ export function SearchResults({
   isSearching,
   onCardPressed,
 }: SearchResultsProps) {
-  
   return onLoadable(availabilityLoadable)(
     () =>
       isSearching ? (
@@ -24,18 +23,18 @@ export function SearchResults({
 
     () => null,
     (availabilityData) => {
-      console.log(availabilityData)
       return (
         <div className="flex flex-wrap justify-start gap-8 px-8">
           {availabilityData.map((availability) => (
             <CampCard
               key={availability.mapId}
+              mapId={availability.mapId}
               resourceLocationId={availability.legendDetails.resourceLocationId}
               image={availability.legendDetails.imageUrl}
               title={availability.legendDetails.title}
               park={availability.legendDetails.description}
-              cost={"-"}
-              rating={"-"}
+              cost={'-'}
+              rating={'-'}
               onPress={onCardPressed}
             />
           ))}

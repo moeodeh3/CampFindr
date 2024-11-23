@@ -1,4 +1,5 @@
 export interface AvailabilityInput {
+  mapId?: number;
   bookingCategoryId: number;
   equipmentCategoryId: number;
   subEquipmentCategoryId: number;

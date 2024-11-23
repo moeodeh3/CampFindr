@@ -1,5 +1,6 @@
-import { ResourceEntry, ResourceLocationResponse } from './types';
+import { ResourceEntry } from './types';
 import { useResourceLocationQuery } from './query.js';
+import { getPositionFromAddress } from '../google-maps/position.js';
 
 // in-memory cache
 let resourceMap: Map<number, ResourceEntry> = new Map();
@@ -41,7 +42,31 @@ export async function getResourceLocationDetails(
   resourceLocationId: number
 ): Promise<ResourceEntry | null> {
   try {
-    return resourceMap.get(resourceLocationId) || null;
+    const resource = resourceMap.get(resourceLocationId);
+
+    if (!resource) {
+      return null;
+    }
+
+    // we check if the position exists and fetch it if it doesn't
+    if (!resource.position && resource.streetAddress) {
+      const position = await getPositionFromAddress(
+        resource.streetAddress,
+        resource.city,
+        resource.region,
+        resource.regionCode,
+        resource.country
+      );
+
+      if (position) {
+        resource.position = position;
+
+        // we update the in-memory cache with the new position
+        resourceMap.set(resourceLocationId, resource);
+      }
+    }
+
+    return resource;
   } catch (error) {
     console.error('Error fetching resource location details:', error);
     return null;
