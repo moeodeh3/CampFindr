@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express';
 import { getResourceLocationDetails } from '../service/resource/resourceLegend.js';
+import { getResourceLocationId } from '../service/mapLegend/mapLegend.js';
 
-const resourceRouter = express.Router();
+export const resourceRouter = express.Router();
 
 resourceRouter.get(
   '/:id',
@@ -9,18 +10,22 @@ resourceRouter.get(
     const { id } = req.params;
 
     try {
-      const data = await getResourceLocationDetails(Number(id));
+      const resourceLocationId = await getResourceLocationId(Number(id));
+      if (!resourceLocationId) {
+        return res
+          .status(404)
+          .json({ error: 'Resource location id not found' });
+      }
+
+      const data = await getResourceLocationDetails(resourceLocationId);
       if (!data) {
         return res.status(404).json({ error: 'Resource location not found' });
       }
       return res.status(200).json(data);
-    } catch (error) {
-      console.error('Error fetching resource location:', error);
+    } catch (err) {
       return res
         .status(500)
-        .json({ error: 'Failed to fetch resource location' });
+        .json({ error: 'Failed to fetch resource location ', err });
     }
   }
 );
-
-export default resourceRouter;

@@ -4,20 +4,25 @@ import {
 } from 'src/hooks/ontario-parks/query';
 import ResourceDetails from './resource-details';
 import { useAvailability } from 'src/providers/availabilityContext';
+import { useOpenMeteoForecastQuery } from 'src/hooks/open-meteo/query';
 
 interface ResourceDetailsWithQueryProps {
   mapId: number;
-  resourceLocationId: number;
 }
 
 export default function ResourceDetailsWithQuery(
   props: ResourceDetailsWithQueryProps
 ) {
-  const { mapId, resourceLocationId } = props;
+  const { mapId } = props;
   const { availabilityInput } = useAvailability();
 
   const resourceDetailsLoadable = useOntarioParksResourceDetailsQuery(
-    { resourceLocationId },
+    { mapId },
+    { enabled: true }
+  );
+
+  const weatherForecastLoadable = useOpenMeteoForecastQuery(
+    { mapId },
     { enabled: true }
   );
 
@@ -35,6 +40,9 @@ export default function ResourceDetailsWithQuery(
       <ResourceDetails
         resourceDetailsLoadable={resourceDetailsLoadable}
         availabilityLoadable={availabilityLoadable}
+        weatherForecastLoadable={weatherForecastLoadable}
+        checkInDate={availabilityInput?.startDate}
+        checkOutDate={availabilityInput?.endDate}
       />
     </div>
   );

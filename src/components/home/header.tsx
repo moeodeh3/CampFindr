@@ -1,7 +1,7 @@
-import Image from "next/image";
-import { FontAwesomeIcon } from "../font-awesome-icon";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import LOGO from "../../../public/campfndr_logo.jpg";
+import Image from 'next/image';
+import { FontAwesomeIcon } from '../font-awesome-icon';
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import LOGO from '../../../public/campfndr_logo.jpg';
 
 export function Header() {
   return (
@@ -13,7 +13,7 @@ export function Header() {
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, 240px"
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: 'cover' }}
             className="rounded-xl"
           />
         </div>

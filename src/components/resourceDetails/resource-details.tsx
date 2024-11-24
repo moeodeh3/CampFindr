@@ -1,7 +1,7 @@
 import { VerticalSpacer } from '../spacer/vertical-spacer';
 import Image from 'next/image';
 import { HorizontalSpacer } from '../spacer/horizontal-spacer';
-import { getWithoutHtmlTags } from './utils';
+import { formatHtmlToSections } from './utils';
 import {
   composeLoadables,
   Loadable,
@@ -10,28 +10,49 @@ import {
 } from 'src/hooks/api/query';
 import { AvailabilityResponse, ResourceEntry } from '@packages/types';
 import { FontAwesomeIcon } from '../font-awesome-icon';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faLocationDot,
+  faPhone,
+} from '@fortawesome/free-solid-svg-icons';
 import { colors } from 'src/design/constant';
-import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { DailyWeatherForecast } from 'src/hooks/api/open-meteo/types';
+import { WeatherForecastCard } from '../weather-forecast-card';
 
 interface ResourceDetailsProps {
+  checkInDate: string;
+  checkOutDate: string;
   resourceDetailsLoadable: Loadable<ResourceEntry>;
   availabilityLoadable: Loadable<AvailabilityResponse[]>;
+  weatherForecastLoadable: Loadable<DailyWeatherForecast[]>;
 }
 
 export default function ResourceDetails(props: ResourceDetailsProps) {
-  const { resourceDetailsLoadable, availabilityLoadable } = props;
+  const {
+    checkInDate,
+    checkOutDate,
+    resourceDetailsLoadable,
+    availabilityLoadable,
+    weatherForecastLoadable,
+  } = props;
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+  });
 
   return onLoadable(
-    composeLoadables(resourceDetailsLoadable, availabilityLoadable)(tuple)
+    composeLoadables(
+      resourceDetailsLoadable,
+      availabilityLoadable,
+      weatherForecastLoadable
+    )(tuple)
   )(
     () => null,
     () => null,
-    ([resourceDetails, availability]) => {
-      const formattedDescription = getWithoutHtmlTags(
-        resourceDetails?.description
-      );
-
+    ([resourceDetails, availability, weatherForecast]) => {
+      const sections = formatHtmlToSections(resourceDetails?.description || '');
       const position = resourceDetails?.position
         ? {
             lat: resourceDetails.position.latitude,
@@ -42,27 +63,81 @@ export default function ResourceDetails(props: ResourceDetailsProps) {
       return (
         <div className="flex h-full w-full">
           <div className="flex flex-row justify-between h-full w-full">
-            <div className="flex flex-col h-full w-1/2 p-8 space-y-8">
-              <div className="flex flex-col space-y-4 w-full">
-                <div className="flex flex-col w-full items-center justify-center space-y-4">
-                  <p className="text-text-primary text-2xl font-semibold py-2">
-                    {resourceDetails.fullName}
+            <div className="flex flex-col h-full w-2/3 px-8 space-y-6">
+              <div className="flex flex-col space-y-8 w-full">
+                <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
+                  <p className="text-text-primary text-2xl font-semibold">
+                    {resourceDetails?.fullName}
                   </p>
-                  <Image
-                    src={
-                      availability?.[0]?.legendDetails?.imageUrl ||
-                      'https://cscan-infocan.ca/wp-content/uploads/2022/08/Zaid-Kobti-1-e1659717885644.jpg'
-                    }
-                    alt="Failed to load"
-                    width={335}
-                    height={187.5}
-                    className="rounded-xl"
-                  />
+                  <div className="flex flex-row w-full h-full">
+                    <div className="flex flex-col w-1/3 h-full justify-between py-2">
+                      <div className="flex flex-col space-y-2">
+                        <HeaderWithIcon title="Address" icon={faLocationDot} />
+                        <div className="flex flex-col">
+                          <p className="text-text-primary text-sm font-normal">
+                            {resourceDetails?.streetAddress}
+                          </p>
+                          {resourceDetails?.city ||
+                          resourceDetails?.region ||
+                          resourceDetails?.regionCode ? (
+                            <p className="text-text-primary text-sm font-normal">
+                              {resourceDetails.city
+                                ? `${resourceDetails.city}, `
+                                : ''}
+                              {resourceDetails.region
+                                ? `${resourceDetails.region}, `
+                                : ''}
+                              {resourceDetails.regionCode || ''}
+                            </p>
+                          ) : null}
+                          <p className="text-text-primary text-sm font-normal">
+                            {resourceDetails?.country}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col space-y-2">
+                        <HeaderWithIcon title="Phone" icon={faPhone} />
+
+                        <p className="text-text-primary text-sm font-normal">
+                          {resourceDetails?.phoneNumber}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex w-1/3 py-2 items-center justify-center">
+                      <Image
+                        src={
+                          availability?.[0]?.legendDetails?.imageUrl ||
+                          'https://cscan-infocan.ca/wp-content/uploads/2022/08/Zaid-Kobti-1-e1659717885644.jpg'
+                        }
+                        alt="Failed to load"
+                        width={335}
+                        height={187.5}
+                        className="rounded-xl"
+                      />
+                    </div>
+                    <div className="flex flex-col w-1/3 h-full items-end">
+                      <WeatherForecastCard
+                        weatherForecast={weatherForecast}
+                        checkInDate={checkInDate}
+                        checkOutDate={checkOutDate}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-text-primary text-base font-normal">
-                    {formattedDescription}
-                  </p>
+                <HorizontalSpacer />
+                <div className="flex flex-col space-y-4">
+                  {sections.map((section, index) => (
+                    <div key={index} className="space-y-2">
+                      {section.heading && (
+                        <p className="text-text-primary text-lg font-semibold">
+                          {section.heading}
+                        </p>
+                      )}
+                      <p className="text-text-primary text-base font-normal">
+                        {section.content}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
               <HorizontalSpacer />
@@ -81,23 +156,27 @@ export default function ResourceDetails(props: ResourceDetailsProps) {
             </div>
             <VerticalSpacer />
             <div className="flex h-full px-4 w-1/2">
-              {position ? (
-                <LoadScript
-                  googleMapsApiKey={
-                    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!
-                  }
-                >
+              {isLoaded ? (
+                position ? (
                   <GoogleMap
-                    mapContainerStyle={{ width: '100%', height: '100%' }}
+                    mapContainerStyle={{ width: '100%', height: '88%' }}
                     center={position}
                     zoom={13}
                   >
                     <MarkerF position={position} />
                   </GoogleMap>
-                </LoadScript>
+                ) : (
+                  <p className="text-text-primary text-center m-auto">
+                    Location unavailable.
+                  </p>
+                )
+              ) : loadError ? (
+                <p className="text-text-primary text-center m-auto">
+                  Failed to load map.
+                </p>
               ) : (
                 <p className="text-text-primary text-center m-auto">
-                  Location unavailable.
+                  Loading map...
                 </p>
               )}
             </div>
@@ -131,6 +210,18 @@ const CampgroundCard = (props: CampgroundCardProps) => {
             {linksAvailable} available
           </p>
         </div>
+      </div>
+    </div>
+  );
+};
+
+const HeaderWithIcon = (props: { title: string; icon: IconProp }) => {
+  const { title, icon } = props;
+  return (
+    <div>
+      <div className="flex flex-row items-center space-x-2">
+        <p className="text-text-primary text-base font-semibold">{title}</p>
+        <FontAwesomeIcon icon={icon} size="lg" color={colors.primary} />
       </div>
     </div>
   );

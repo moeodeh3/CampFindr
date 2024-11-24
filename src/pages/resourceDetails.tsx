@@ -5,11 +5,8 @@ import ResourceDetailsWithQuery from 'src/components/resourceDetails/resource-de
 export default function ResourceDetailsPage() {
   const router = useRouter();
 
-  const { mapId, resourceLocationId } = router.query;
+  const { mapId } = router.query;
 
-  const resourceLocationIdNumber = resourceLocationId
-    ? Number(resourceLocationId)
-    : null;
   const mapIdNumber = mapId ? Number(mapId) : null;
 
   return (
@@ -17,10 +14,7 @@ export default function ResourceDetailsPage() {
       <main className="min-h-full w-full space-y-8">
         <Header />
         <div className="flex min-h-full w-full">
-          <ResourceDetailsWithQuery
-            mapId={mapIdNumber}
-            resourceLocationId={resourceLocationIdNumber}
-          />
+          <ResourceDetailsWithQuery mapId={mapIdNumber} />
         </div>
       </main>
     </div>

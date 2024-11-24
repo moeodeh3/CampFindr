@@ -37,3 +37,7 @@ Thumbs.db
 # build directories
 dist/
 build/
+.next/
+
+# Next.js specific
+.next/

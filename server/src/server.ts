@@ -3,9 +3,10 @@ import cron from 'node-cron';
 import cors from 'cors';
 import { fetchMapLegend } from './service/mapLegend/mapLegend.js';
 import { fetchResourceLocations } from './service/resource/resourceLegend.js';
-import resourceRouter from './routes/resource.js';
-import availabilityRouter from './routes/availability.js';
 import dotenv from 'dotenv';
+import { weatherRouter } from './routes/weather.js';
+import { resourceRouter } from './routes/resource.js';
+import { availabilityRouter } from './routes/availability.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -42,6 +43,7 @@ cron.schedule('0 0 * * 0', refreshCaches);
 // routers
 app.use('/api/resource', resourceRouter);
 app.use('/api/availability', availabilityRouter);
+app.use('/api/weather', weatherRouter);
 
 // start server
 app.listen(PORT, () => {

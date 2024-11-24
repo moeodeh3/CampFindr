@@ -1,23 +1,23 @@
-import { useEffect, useRef, useState } from "react";
-import { colors } from "../../design/constant";
-import { BaseButton } from "../button/base-button";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "../font-awesome-icon";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { useEffect, useRef } from 'react';
+import { colors } from '../../design/constant';
+import { BaseButton } from '../button/base-button';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '../font-awesome-icon';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import {
   DrivingDistanceOption,
   DropdownOption,
   PartySizeOption,
-} from "./utils";
-import { VerticalSpacer } from "../spacer/vertical-spacer";
+} from './utils';
+import { VerticalSpacer } from '../spacer/vertical-spacer';
 
 interface SearchBarProps {
   activeDropdown: DropdownOption | null;
   startDate: Date | null;
   endDate: Date | null;
-  drivingDistance: DrivingDistanceOption | "";
-  partySize: PartySizeOption | "";
+  drivingDistance: DrivingDistanceOption | '';
+  partySize: PartySizeOption | '';
   handleDropdown: (option: DropdownOption) => void;
   handleStartDate: (date: Date) => void;
   handleEndDate: (date: Date) => void;
@@ -53,9 +53,9 @@ export function SearchBar(props: SearchBarProps) {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [handleDropdown]);
 
@@ -80,22 +80,22 @@ export function SearchBar(props: SearchBarProps) {
       >
         <SearchItemWithDropdown
           title="Where"
-          description={drivingDistance ? drivingDistance : "Driving distance"}
+          description={drivingDistance ? drivingDistance : 'Driving distance'}
           className="text-left md:w-[20%]"
-          isActive={activeDropdown === "Where"}
-          toggleDropdown={() => toggleDropdown("Where")}
+          isActive={activeDropdown === 'Where'}
+          toggleDropdown={() => toggleDropdown('Where')}
           renderDropdown={() => (
             <DropdownList
               items={
                 [
-                  "1 hour",
-                  "2 hours",
-                  "3 hours",
-                  "4+ hours",
+                  '1 hour',
+                  '2 hours',
+                  '3 hours',
+                  '4+ hours',
                 ] as DrivingDistanceOption[]
               }
               onSelect={(item: DrivingDistanceOption) =>
-                handleSelect("Where", item, handleDrivingDistance)
+                handleSelect('Where', item, handleDrivingDistance)
               }
             />
           )}
@@ -105,17 +105,17 @@ export function SearchBar(props: SearchBarProps) {
           <SearchItemWithDropdown
             title="Check in"
             description={
-              startDate ? startDate.toLocaleDateString() : "Add dates"
+              startDate ? startDate.toLocaleDateString() : 'Add dates'
             }
-            isActive={activeDropdown === "Check in"}
+            isActive={activeDropdown === 'Check in'}
             hasDivider={true}
             className="w-[20%]"
-            toggleDropdown={() => toggleDropdown("Check in")}
+            toggleDropdown={() => toggleDropdown('Check in')}
             renderDropdown={() => (
               <DatePicker
                 selected={startDate}
                 onChange={(date: Date) =>
-                  handleSelect("Check in", date, handleStartDate)
+                  handleSelect('Check in', date, handleStartDate)
                 }
                 inline
               />
@@ -123,16 +123,16 @@ export function SearchBar(props: SearchBarProps) {
           />
           <SearchItemWithDropdown
             title="Check out"
-            description={endDate ? endDate.toLocaleDateString() : "Add dates"}
-            isActive={activeDropdown === "Check out"}
+            description={endDate ? endDate.toLocaleDateString() : 'Add dates'}
+            isActive={activeDropdown === 'Check out'}
             hasDivider={true}
             className="w-[20%]"
-            toggleDropdown={() => toggleDropdown("Check out")}
+            toggleDropdown={() => toggleDropdown('Check out')}
             renderDropdown={() => (
               <DatePicker
                 selected={endDate}
                 onChange={(date: Date) =>
-                  handleSelect("Check out", date, handleEndDate)
+                  handleSelect('Check out', date, handleEndDate)
                 }
                 inline
               />
@@ -140,23 +140,23 @@ export function SearchBar(props: SearchBarProps) {
           />
           <SearchItemWithDropdown
             title="Who"
-            description={partySize ? partySize : "Add guests"}
-            isActive={activeDropdown === "Who"}
+            description={partySize ? partySize : 'Add guests'}
+            isActive={activeDropdown === 'Who'}
             hasDivider={true}
             className="w-[20%]"
-            toggleDropdown={() => toggleDropdown("Who")}
+            toggleDropdown={() => toggleDropdown('Who')}
             renderDropdown={() => (
               <DropdownList
                 items={
                   [
-                    "1 guest",
-                    "2 guests",
-                    "3 guests",
-                    "4 guests",
+                    '1 guest',
+                    '2 guests',
+                    '3 guests',
+                    '4 guests',
                   ] as PartySizeOption[]
                 }
                 onSelect={(item: PartySizeOption) =>
-                  handleSelect("Who", item, handlePartySize)
+                  handleSelect('Who', item, handlePartySize)
                 }
               />
             )}
@@ -192,7 +192,7 @@ interface SearchItemWithDropdownProps {
 const SearchItemWithDropdown = ({
   title,
   description,
-  className = "",
+  className = '',
   isActive,
   hasDivider,
   toggleDropdown,

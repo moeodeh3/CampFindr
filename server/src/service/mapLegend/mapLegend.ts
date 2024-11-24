@@ -55,3 +55,20 @@ export async function getMapLegendDetails(
     return null;
   }
 }
+
+export async function getResourceLocationId(
+  mapId: number
+): Promise<number | null> {
+  try {
+    const legendDetails = legendMap.get(mapId);
+
+    if (legendDetails) {
+      return legendDetails.resourceLocationId;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error fetching resource location id:', error);
+    return null;
+  }
+}

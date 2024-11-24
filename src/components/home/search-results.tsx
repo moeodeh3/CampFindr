@@ -5,7 +5,7 @@ import { AvailabilityResponse } from '@packages/types';
 interface SearchResultsProps {
   availabilityLoadable: Loadable<AvailabilityResponse[]>;
   isSearching: boolean;
-  onCardPressed: (mapId: number, resourceLocationId: number) => void;
+  onCardPressed: (mapId: number) => void;
 }
 
 export function SearchResults({
@@ -29,7 +29,6 @@ export function SearchResults({
             <CampCard
               key={availability.mapId}
               mapId={availability.mapId}
-              resourceLocationId={availability.legendDetails.resourceLocationId}
               image={availability.legendDetails.imageUrl}
               title={availability.legendDetails.title}
               park={availability.legendDetails.description}

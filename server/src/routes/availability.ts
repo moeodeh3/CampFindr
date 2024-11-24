@@ -8,7 +8,7 @@ import {
 } from '../service/availability/availability.js';
 import { ALLPARKS_MAP_ID } from '../service/mapLegend/constant.js';
 
-const availabilityRouter = express.Router();
+export const availabilityRouter = express.Router();
 
 availabilityRouter.get('/', async (req: Request, res: Response) => {
   const {
@@ -75,5 +75,3 @@ availabilityRouter.get('/', async (req: Request, res: Response) => {
       .json({ error: 'Failed to fetch availability data, ' + err });
   }
 });
-
-export default availabilityRouter;

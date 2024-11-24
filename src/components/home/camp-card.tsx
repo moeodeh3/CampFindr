@@ -1,34 +1,24 @@
 import { FontAwesomeIcon } from '../font-awesome-icon';
-import { faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import { colors } from '../../design/constant';
 import { BaseButton } from '../button/base-button';
 
 interface CampCardProps {
   mapId: number;
-  resourceLocationId: number;
   image: string;
   title: string;
   park: string;
   cost: string;
   rating: string;
-  onPress: (mapId: number, resourceLocationId: number) => void;
+  onPress: (mapId: number) => void;
 }
 
 export function CampCard(props: CampCardProps) {
-  const {
-    mapId,
-    resourceLocationId,
-    image,
-    title,
-    park,
-    cost,
-    rating,
-    onPress,
-  } = props;
+  const { mapId, image, title, park, cost, rating, onPress } = props;
 
   return (
-    <BaseButton onClick={() => onPress(mapId, resourceLocationId)}>
+    <BaseButton onClick={() => onPress(mapId)}>
       <div className="flex flex-col w-60 space-y-2">
         <div className="relative w-60 h-60">
           <Image

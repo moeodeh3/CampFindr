@@ -16,7 +16,7 @@ export interface AvailabilityResponse {
 // Resource Details
 
 export interface ResourceInput {
-  resourceLocationId: number;
+  mapId: number;
 }
 
 export interface ResourceEntry {

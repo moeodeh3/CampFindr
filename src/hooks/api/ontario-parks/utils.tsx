@@ -46,10 +46,10 @@ export async function getOntarioParksAvailability(
 export async function getOntarioParksResourceDetails(
   props: ResourceInput
 ): Promise<ResourceEntry | null> {
-  const { resourceLocationId } = props;
+  const { mapId } = props;
 
   try {
-    const url = `${BASE_URL}/api/resource/${resourceLocationId}`;
+    const url = `${BASE_URL}/api/resource/${mapId}`;
     const resp = await fetch(url, {
       method: 'GET',
       headers: {

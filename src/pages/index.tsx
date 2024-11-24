@@ -40,10 +40,8 @@ export default function Home() {
     { enabled: !!availabilityInput && isSearching }
   );
 
-  const handleCardPressed = (mapId: number, resourceLocationId: number) => {
-    router.push(
-      `/resourceDetails?mapId=${mapId}&resourceLocationId=${resourceLocationId}`
-    );
+  const handleCardPressed = (mapId: number) => {
+    router.push(`/resourceDetails?mapId=${mapId}`);
   };
 
   const onSearch = () => {
