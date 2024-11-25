@@ -22,7 +22,7 @@ export interface Resource {
   remainingQuota: number | null;
 }
 
-export interface FetchAvailabilityInput {
+export interface AvailabilityInput {
   mapId: number; // The main park or map identifier, defaults to all parks ID (-2147483464)
   bookingCategoryId: string; // Default category for campsite reservations
   equipmentCategoryId: string; // Category of equipment (e.g., tent), default: -32768 (single tent)

@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Header } from '../components/home/header';
-import { SearchBar } from '../components/home/search-bar';
 import {
-  DrivingDistanceOption,
+  KmDistanceOption,
   DropdownOption,
   formatAvailabilityInput,
   PartySizeOption,
@@ -12,6 +11,8 @@ import { onLoadable } from '../hooks/api/query';
 import { SearchResults } from '../components/home/search-results';
 import router from 'next/router';
 import { useAvailability } from 'src/providers/availabilityContext';
+import { useUserLocation } from 'src/hooks/user-location';
+import { SearchBar } from 'src/components/home/search-bar';
 
 export default function Home() {
   const [activeDropdown, setActiveDropdown] = useState<DropdownOption | null>(
@@ -19,12 +20,11 @@ export default function Home() {
   );
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [drivingDistance, setDrivingDistance] = useState<
-    DrivingDistanceOption | ''
-  >('');
-  const [partySize, setPartySize] = useState<PartySizeOption | ''>('');
+  const [kmDistance, setKmDistance] = useState<KmDistanceOption | null>(null);
+  const [partySize, setPartySize] = useState<PartySizeOption | null>(null);
 
   const { availabilityInput, setAvailabilityInput } = useAvailability();
+  const { location, getLocation } = useUserLocation();
 
   const [isSearching, setIsSearching] = useState(false);
 
@@ -32,9 +32,7 @@ export default function Home() {
     availabilityInput
       ? {
           ...availabilityInput,
-          cartUid: 'uid123',
-          cartTransactionUid: 'trans123',
-          bookingUid: 'booking123',
+          userPosition: location,
         }
       : null,
     { enabled: !!availabilityInput && isSearching }
@@ -48,13 +46,18 @@ export default function Home() {
     const formattedInput = formatAvailabilityInput(
       startDate,
       endDate,
-      partySize
+      partySize,
+      kmDistance
     );
     if (formattedInput) {
       setAvailabilityInput(formattedInput);
       setIsSearching(true);
     }
   };
+
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   useEffect(() => {
     onLoadable(availabilityLoadable)(
@@ -76,13 +79,13 @@ export default function Home() {
           activeDropdown={activeDropdown}
           startDate={startDate}
           endDate={endDate}
-          drivingDistance={drivingDistance}
+          kmDistance={kmDistance}
           partySize={partySize}
           handleDropdown={(option: DropdownOption) => setActiveDropdown(option)}
           handleStartDate={(date: Date) => setStartDate(date)}
           handleEndDate={(date: Date) => setEndDate(date)}
-          handleDrivingDistance={(distance: DrivingDistanceOption) =>
-            setDrivingDistance(distance)
+          handleKmDistance={(distance: KmDistanceOption) =>
+            setKmDistance(distance)
           }
           handlePartySize={(size: PartySizeOption) => setPartySize(size)}
           onSearch={onSearch}

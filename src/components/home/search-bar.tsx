@@ -6,22 +6,25 @@ import { FontAwesomeIcon } from '../font-awesome-icon';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
-  DrivingDistanceOption,
+  KmDistanceOption,
   DropdownOption,
   PartySizeOption,
+  getOptions,
+  KM_DISTANCE_MAP,
+  PARTY_SIZE_MAP,
 } from './utils';
 import { VerticalSpacer } from '../spacer/vertical-spacer';
 
-interface SearchBarProps {
+export interface SearchBarProps {
   activeDropdown: DropdownOption | null;
   startDate: Date | null;
   endDate: Date | null;
-  drivingDistance: DrivingDistanceOption | '';
+  kmDistance: KmDistanceOption | '';
   partySize: PartySizeOption | '';
   handleDropdown: (option: DropdownOption) => void;
   handleStartDate: (date: Date) => void;
   handleEndDate: (date: Date) => void;
-  handleDrivingDistance: (distance: DrivingDistanceOption) => void;
+  handleKmDistance: (distance: KmDistanceOption) => void;
   handlePartySize: (size: PartySizeOption) => void;
   onSearch: () => void;
 }
@@ -31,12 +34,12 @@ export function SearchBar(props: SearchBarProps) {
     activeDropdown,
     startDate,
     endDate,
-    drivingDistance,
+    kmDistance,
     partySize,
     handleDropdown,
     handleStartDate,
     handleEndDate,
-    handleDrivingDistance,
+    handleKmDistance,
     handlePartySize,
     onSearch,
   } = props;
@@ -80,22 +83,15 @@ export function SearchBar(props: SearchBarProps) {
       >
         <SearchItemWithDropdown
           title="Where"
-          description={drivingDistance ? drivingDistance : 'Driving distance'}
+          description={kmDistance ? kmDistance : 'Driving distance'}
           className="text-left md:w-[20%]"
           isActive={activeDropdown === 'Where'}
           toggleDropdown={() => toggleDropdown('Where')}
           renderDropdown={() => (
             <DropdownList
-              items={
-                [
-                  '1 hour',
-                  '2 hours',
-                  '3 hours',
-                  '4+ hours',
-                ] as DrivingDistanceOption[]
-              }
-              onSelect={(item: DrivingDistanceOption) =>
-                handleSelect('Where', item, handleDrivingDistance)
+              items={getOptions(KM_DISTANCE_MAP)}
+              onSelect={(item: KmDistanceOption) =>
+                handleSelect('Where', item, handleKmDistance)
               }
             />
           )}
@@ -147,14 +143,7 @@ export function SearchBar(props: SearchBarProps) {
             toggleDropdown={() => toggleDropdown('Who')}
             renderDropdown={() => (
               <DropdownList
-                items={
-                  [
-                    '1 guest',
-                    '2 guests',
-                    '3 guests',
-                    '4 guests',
-                  ] as PartySizeOption[]
-                }
+                items={getOptions(PARTY_SIZE_MAP)}
                 onSelect={(item: PartySizeOption) =>
                   handleSelect('Who', item, handlePartySize)
                 }

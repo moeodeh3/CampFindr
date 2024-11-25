@@ -32,7 +32,7 @@ export interface ResourceEntry {
   phoneNumber: string;
 }
 
-interface Position {
+export interface Position {
   latitude: number;
   longitude: number;
 }

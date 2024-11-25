@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { getMapLegendDetails } from '../mapLegend/mapLegend.js';
 import {
   AvailabilityResponse,
-  FetchAvailabilityInput,
+  AvailabilityInput,
   OntarioAvailabilityResponse,
 } from './types';
 import {
@@ -18,7 +18,7 @@ const cacheTimestamp: { [key: string]: number } = {};
 // we have a cache time of 2 minutes
 const CACHE_DURATION = 1000 * 60 * 2;
 
-function generateCacheKey(queryParams: FetchAvailabilityInput): string {
+function generateCacheKey(queryParams: AvailabilityInput): string {
   const queryString = Object.entries(queryParams)
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
     .join('&');
@@ -26,7 +26,7 @@ function generateCacheKey(queryParams: FetchAvailabilityInput): string {
 }
 
 export async function FetchAvailability(
-  queryParams: FetchAvailabilityInput
+  queryParams: AvailabilityInput
 ): Promise<OntarioAvailabilityResponse> {
   const cacheKey = generateCacheKey(queryParams);
 
@@ -55,7 +55,7 @@ export async function FetchAvailability(
 }
 
 export async function FetchAllParksAvailability(
-  queryParams: FetchAvailabilityInput
+  queryParams: AvailabilityInput
 ): Promise<AvailabilityResponse[]> {
   const allParksData = await FetchAvailability(queryParams);
 
@@ -91,7 +91,7 @@ export async function FetchAllParksAvailability(
 }
 
 export async function FetchCampgroundAvailability(
-  queryParams: FetchAvailabilityInput
+  queryParams: AvailabilityInput
 ): Promise<AvailabilityResponse[]> {
   const availability = await FetchAvailability(queryParams);
 

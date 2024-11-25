@@ -1,7 +1,7 @@
-import { FetchAvailabilityInput, OntarioAvailabilityResponse } from './types';
+import { AvailabilityInput, OntarioAvailabilityResponse } from './types';
 
 export async function useAvailabilityQuery(
-  queryParams: FetchAvailabilityInput
+  queryParams: AvailabilityInput
 ): Promise<OntarioAvailabilityResponse> {
   const url = `https://reservations.ontarioparks.ca/api/availability/map`;
 

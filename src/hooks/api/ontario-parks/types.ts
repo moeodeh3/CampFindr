@@ -1,3 +1,5 @@
+import { Position } from '@packages/types';
+
 export interface AvailabilityInput {
   mapId?: number;
   bookingCategoryId: number;
@@ -9,4 +11,6 @@ export interface AvailabilityInput {
   startDate: string;
   endDate: string;
   partySize: number;
+  maxDistance?: number;
+  userPosition?: Position;
 }

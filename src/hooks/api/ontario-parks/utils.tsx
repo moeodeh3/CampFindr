@@ -22,12 +22,14 @@ export async function getOntarioParksAvailability(
     startDate,
     endDate,
     partySize,
+    userPosition,
+    maxDistance,
   } = props;
 
   try {
     const url = `${BASE_URL}/api/availability?${
       mapId ? `mapId=${mapId}&` : ''
-    }bookingCategoryId=${bookingCategoryId}&equipmentCategoryId=${equipmentCategoryId}&subEquipmentCategoryId=${subEquipmentCategoryId}&cartUid=${cartUid}&cartTransactionUid=${cartTransactionUid}&bookingUid=${bookingUid}&startDate=${startDate}&endDate=${endDate}&partySize=${partySize}`;
+    }bookingCategoryId=${bookingCategoryId}&equipmentCategoryId=${equipmentCategoryId}&subEquipmentCategoryId=${subEquipmentCategoryId}&cartUid=${cartUid}&cartTransactionUid=${cartTransactionUid}&bookingUid=${bookingUid}&startDate=${startDate}&endDate=${endDate}&partySize=${partySize}&userLatitude=${userPosition?.latitude}&userLongitude=${userPosition?.longitude}&maxDistance=${maxDistance}`;
 
     const resp = await fetch(url, {
       method: 'GET',
