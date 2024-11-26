@@ -1,11 +1,6 @@
 module.exports = {
   images: {
-    domains: [
-      'media.discordapp.net',
-      'cdn.discordapp.com',
-      'reservations.ontarioparks.ca',
-      'drive.google.com',
-    ],
+    domains: ['reservations.ontarioparks.ca', 'storage.googleapis.com'],
   },
   reactStrictMode: true,
   swcMinify: true,

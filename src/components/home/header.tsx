@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { FontAwesomeIcon } from '../font-awesome-icon';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import LOGO from '../../../public/campfndr_logo.jpg';
+import { colors } from 'src/design/constant';
 
 export function Header() {
   return (
@@ -17,11 +18,11 @@ export function Header() {
             className="rounded-xl"
           />
         </div>
-        <p className="text-text-primary text-lg font-bold">CampFindr</p>
+        <p className="text-primary text-lg font-bold">CampFindr</p>
       </div>
       <div className="flex flex-row space-x-4 items-center">
         <div className="flex flex-row items-center space-x-1">
-          <FontAwesomeIcon icon={faGlobe} />
+          <FontAwesomeIcon icon={faGlobe} color={colors.primary} />
           <p className="text-text-primary text-base font-normal">English</p>
         </div>
         <p className="text-text-primary text-base font-normal">Github</p>

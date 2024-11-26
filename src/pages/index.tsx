@@ -13,6 +13,16 @@ import router from 'next/router';
 import { useAvailability } from 'src/providers/availabilityContext';
 import { useUserLocation } from 'src/hooks/user-location';
 import { SearchBar } from 'src/components/home/search-bar';
+import Carousel from 'src/components/home/carousel';
+
+// TODO: we should move this to the backend and query it instead of harcoding it
+const IMAGE_ARRAY = [
+  'https://storage.googleapis.com/campfindr/image1.jpg',
+  'https://storage.googleapis.com/campfindr/image2.jpg',
+  'https://storage.googleapis.com/campfindr/image3.jpg',
+  'https://storage.googleapis.com/campfindr/image4.jpg',
+  'https://storage.googleapis.com/campfindr/image5.jpg',
+];
 
 export default function Home() {
   const [activeDropdown, setActiveDropdown] = useState<DropdownOption | null>(
@@ -27,6 +37,9 @@ export default function Home() {
   const { location, getLocation } = useUserLocation();
 
   const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(
+    availabilityInput ? true : false
+  );
 
   const availabilityLoadable = useOntarioParksAvailabilityQuery(
     availabilityInput
@@ -52,6 +65,7 @@ export default function Home() {
     if (formattedInput) {
       setAvailabilityInput(formattedInput);
       setIsSearching(true);
+      setHasSearched(true);
     }
   };
 
@@ -73,8 +87,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen h-full bg-background overflow-x-hidden">
-      <main className="h-full space-y-8">
+      <main className="h-full space-y-6">
         <Header />
+        {!hasSearched && (
+          <div className="flex flex-col space-y-12">
+            <Carousel images={IMAGE_ARRAY} />
+            <div className="flex flex-col justify-center items-center">
+              <p className="text-4xl font-bold bg-gradient-to-r from-primary via-pink-400 to-red-300 bg-clip-text text-transparent">
+                Discover the Great Outdoors
+              </p>
+            </div>
+          </div>
+        )}
         <SearchBar
           activeDropdown={activeDropdown}
           startDate={startDate}
@@ -90,11 +114,13 @@ export default function Home() {
           handlePartySize={(size: PartySizeOption) => setPartySize(size)}
           onSearch={onSearch}
         />
-        <SearchResults
-          availabilityLoadable={availabilityLoadable}
-          isSearching={isSearching}
-          onCardPressed={handleCardPressed}
-        />
+        {hasSearched && (
+          <SearchResults
+            availabilityLoadable={availabilityLoadable}
+            isSearching={isSearching}
+            onCardPressed={handleCardPressed}
+          />
+        )}
       </main>
     </div>
   );
