@@ -2,6 +2,8 @@ import { Loadable, onLoadable } from '../../hooks/api/query';
 import { CampCard } from './camp-card';
 import { AvailabilityResponse } from '@packages/types';
 import { FilterWithDropdown } from './filter';
+import LoadingAnimation from '../../../public/loading-animation.json';
+import { Lottie } from '../lottie';
 
 interface SearchResultsProps {
   availabilityLoadable: Loadable<AvailabilityResponse[]>;
@@ -17,8 +19,11 @@ export function SearchResults({
   return onLoadable(availabilityLoadable)(
     () =>
       isSearching ? (
-        <div className="flex justify-center items-center py-10">
-          <p className="text-text-light-gray text-xl font-bold">Searching...</p>
+        <div className="flex flex-col justify-center items-center py-10">
+          <p className="text-3xl font-bold bg-gradient-to-r from-primary via-pink-400 to-red-300 bg-clip-text text-transparent">
+            Finding your next adventure...
+          </p>
+          <Lottie src={LoadingAnimation} width={300} height={300} />
         </div>
       ) : null,
 
@@ -34,15 +39,14 @@ export function SearchResults({
               <FilterWithDropdown />
             </div>
           </div>
-          <div className="flex flex-wrap justify-start gap-8 px-8">
+
+          <div className="flex flex-wrap justify-start gap-8 px-32">
             {availabilityData.map((availability) => (
               <CampCard
                 key={availability.mapId}
                 mapId={availability.mapId}
                 image={availability.legendDetails.imageUrl}
                 title={availability.legendDetails.title}
-                park={availability.legendDetails.description}
-                cost={'-'}
                 rating={'-'}
                 onPress={onCardPressed}
               />

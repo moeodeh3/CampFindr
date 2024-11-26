@@ -1,7 +1,7 @@
 import { VerticalSpacer } from '../spacer/vertical-spacer';
 import Image from 'next/image';
 import { HorizontalSpacer } from '../spacer/horizontal-spacer';
-import { formatHtmlToSections } from './utils';
+import { calculateNights, formatHtmlToSections, getReserveUrl } from './utils';
 import {
   composeLoadables,
   Loadable,
@@ -20,6 +20,10 @@ import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { DailyWeatherForecast } from 'src/hooks/api/open-meteo/types';
 import { WeatherForecastCard } from '../weather-forecast-card';
+import { Lottie } from '../lottie';
+import LoadingAnimation from '../../../public/loading-animation.json';
+import { BaseButton } from '../button/base-button';
+import { useAvailability } from 'src/providers/availabilityContext';
 
 interface ResourceDetailsProps {
   checkInDate: string;
@@ -38,9 +42,22 @@ export default function ResourceDetails(props: ResourceDetailsProps) {
     weatherForecastLoadable,
   } = props;
 
+  const { availabilityInput } = useAvailability();
+
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
+
+  const handleReserveCampground = (
+    mapId: number,
+    resourceLocationId: number
+  ) => {
+    // we construct the URL specific to the current campground they are looking at
+    const url = getReserveUrl(mapId, resourceLocationId, availabilityInput);
+
+    // open the URL in a new tab
+    window.open(url.toString(), '_blank');
+  };
 
   return onLoadable(
     composeLoadables(
@@ -49,7 +66,14 @@ export default function ResourceDetails(props: ResourceDetailsProps) {
       weatherForecastLoadable
     )(tuple)
   )(
-    () => null,
+    () => (
+      <div className="flex flex-col justify-center items-center py-10">
+        <p className="text-3xl font-bold bg-gradient-to-r from-primary via-pink-400 to-red-300 bg-clip-text text-transparent">
+          Getting your parks details...
+        </p>
+        <Lottie src={LoadingAnimation} width={300} height={300} />
+      </div>
+    ),
     () => null,
     ([resourceDetails, availability, weatherForecast]) => {
       const sections = formatHtmlToSections(resourceDetails?.description || '');
@@ -66,7 +90,7 @@ export default function ResourceDetails(props: ResourceDetailsProps) {
             <div className="flex flex-col h-full w-2/3 px-8 space-y-6">
               <div className="flex flex-col space-y-8 w-full">
                 <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
-                  <p className="text-text-primary text-2xl font-semibold">
+                  <p className="text-primary text-3xl font-bold">
                     {resourceDetails?.fullName}
                   </p>
                   <div className="flex flex-row w-full h-full">
@@ -110,9 +134,9 @@ export default function ResourceDetails(props: ResourceDetailsProps) {
                           'https://cscan-infocan.ca/wp-content/uploads/2022/08/Zaid-Kobti-1-e1659717885644.jpg'
                         }
                         alt="Failed to load"
-                        width={335}
-                        height={187.5}
-                        className="rounded-xl"
+                        width={800}
+                        height={500}
+                        className="rounded-xl flex-shrink-0"
                       />
                     </div>
                     <div className="flex flex-col w-1/3 h-full items-end">
@@ -142,14 +166,17 @@ export default function ResourceDetails(props: ResourceDetailsProps) {
               </div>
               <HorizontalSpacer />
               <div className="flex flex-col w-full space-y-4">
-                <p className="text-text-primary text-xl font-semibold pb-4">
+                <p className="text-primary text-2xl font-bold pb-4">
                   Campgrounds
                 </p>
                 {availability.map((item) => (
                   <CampgroundCard
                     key={item.mapId}
+                    mapId={item.mapId}
+                    resourceLocationId={item.legendDetails.resourceLocationId}
                     title={item.legendDetails.title}
                     linksAvailable={item.linksAvailable || 0}
+                    onReserve={handleReserveCampground}
                   />
                 ))}
               </div>
@@ -188,27 +215,39 @@ export default function ResourceDetails(props: ResourceDetailsProps) {
 }
 
 interface CampgroundCardProps {
+  mapId: number;
+  resourceLocationId: number;
   title: string;
   linksAvailable: number;
+  onReserve: (mapId: number, resourceLocationId: number) => void;
 }
 
 const CampgroundCard = (props: CampgroundCardProps) => {
-  const { title, linksAvailable } = props;
+  const { mapId, resourceLocationId, title, linksAvailable, onReserve } = props;
   return (
     <div className="border border-primary py-4 px-4 rounded-xl">
       <div className="flex flex-row items-center justify-between">
         <p className="text-text-primary text-lg">{title}</p>
-        <div className="flex flex-row items-center space-x-2">
-          <div className="bg-green-500 p-1 rounded-full flex items-center justify-center">
-            <FontAwesomeIcon
-              icon={faCheck}
-              size="xs"
-              color={colors.textSecondary}
-            />
+        <div className="flex flex-row items-center space-x-6">
+          <div className="flex flex-row items-center space-x-2">
+            <div className="bg-green-500 p-1 rounded-full flex items-center justify-center">
+              <FontAwesomeIcon
+                icon={faCheck}
+                size="xs"
+                color={colors.textSecondary}
+              />
+            </div>
+            <p className="text-text-primary text-lg">
+              {linksAvailable} available
+            </p>
           </div>
-          <p className="text-text-primary text-lg">
-            {linksAvailable} available
-          </p>
+          <BaseButton onClick={() => onReserve(mapId, resourceLocationId)}>
+            <div className="bg-primary flex flex-col justify-center items-center py-1 px-2 rounded-xl">
+              <p className="text-text-secondary text-base font-normal">
+                Reserve
+              </p>
+            </div>
+          </BaseButton>
         </div>
       </div>
     </div>

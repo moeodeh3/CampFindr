@@ -8,19 +8,17 @@ interface CampCardProps {
   mapId: number;
   image: string;
   title: string;
-  park: string;
-  cost: string;
   rating: string;
   onPress: (mapId: number) => void;
 }
 
 export function CampCard(props: CampCardProps) {
-  const { mapId, image, title, park, cost, rating, onPress } = props;
+  const { mapId, image, title, rating, onPress } = props;
 
   return (
     <BaseButton onClick={() => onPress(mapId)}>
-      <div className="flex flex-col w-60 space-y-2">
-        <div className="relative w-60 h-60">
+      <div className="flex flex-col items-start space-y-2 w-[300px]">
+        <div className="relative w-[300px] h-[168px] overflow-hidden">
           <Image
             src={image}
             alt=""
@@ -31,16 +29,19 @@ export function CampCard(props: CampCardProps) {
           />
         </div>
 
-        <div className="space-y-0">
+        <div className="space-y-0 flex flex-col w-full">
           <div className="flex flex-row justify-between items-center">
             <p className="text-text-primary text-sm font-bold">{title}</p>
             <div className="flex flex-row space-x-1 items-center">
-              <FontAwesomeIcon icon={faStar} size="xs" color={colors.rating} />
               <p className="text-rating text-sm font-bold">{rating}</p>
+              <FontAwesomeIcon icon={faStar} size="xs" color={colors.rating} />
             </div>
           </div>
-          <p className="text-text-primary text-sm font-normal">{park}</p>
-          <p className="text-text-primary text-sm font-bold">{cost} $</p>
+          <div className="flex flex-col items-start">
+            <p className="text-text-primary text-sm font-normal">
+              Ontario Provincial Park
+            </p>
+          </div>
         </div>
       </div>
     </BaseButton>

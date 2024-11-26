@@ -1,6 +1,10 @@
 module.exports = {
   images: {
-    domains: ['reservations.ontarioparks.ca', 'storage.googleapis.com'],
+    domains: [
+      'reservations.ontarioparks.ca',
+      'storage.googleapis.com',
+      'cscan-infocan.ca',
+    ],
   },
   reactStrictMode: true,
   swcMinify: true,

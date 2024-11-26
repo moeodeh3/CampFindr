@@ -36,7 +36,7 @@ export default function ResourceDetailsWithQuery(
   );
 
   return (
-    <div className="flex min-h-full w-full">
+    <div className="flex flex-col min-h-full w-full">
       <ResourceDetails
         resourceDetailsLoadable={resourceDetailsLoadable}
         availabilityLoadable={availabilityLoadable}
