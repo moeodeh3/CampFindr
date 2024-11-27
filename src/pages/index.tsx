@@ -14,6 +14,7 @@ import { useAvailability } from 'src/providers/availabilityContext';
 import { useUserLocation } from 'src/hooks/user-location';
 import { SearchBar } from 'src/components/home/search-bar';
 import Carousel from 'src/components/home/carousel';
+import { FilterTab } from 'src/components/home/filter-tab';
 
 // TODO: we should move this to the backend and query it instead of harcoding it
 const IMAGE_ARRAY = [
@@ -32,6 +33,7 @@ export default function Home() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [kmDistance, setKmDistance] = useState<KmDistanceOption | null>(null);
   const [partySize, setPartySize] = useState<PartySizeOption | null>(null);
+  const [showFilterTab, setShowFilterTab] = useState(false);
 
   const { availabilityInput, setAvailabilityInput } = useAvailability();
   const { location, getLocation } = useUserLocation();
@@ -86,7 +88,7 @@ export default function Home() {
   }, [availabilityLoadable]);
 
   return (
-    <div className="min-h-screen h-full bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <main className="h-full space-y-6">
         <Header />
         {!hasSearched && (
@@ -119,9 +121,11 @@ export default function Home() {
             availabilityLoadable={availabilityLoadable}
             isSearching={isSearching}
             onCardPressed={handleCardPressed}
+            onFilterPressed={() => setShowFilterTab(!showFilterTab)}
           />
         )}
       </main>
+      {showFilterTab && <FilterTab onClose={() => setShowFilterTab(false)} />}
     </div>
   );
 }

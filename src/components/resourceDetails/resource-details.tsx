@@ -1,7 +1,7 @@
 import { VerticalSpacer } from '../spacer/vertical-spacer';
 import Image from 'next/image';
 import { HorizontalSpacer } from '../spacer/horizontal-spacer';
-import { calculateNights, formatHtmlToSections, getReserveUrl } from './utils';
+import { formatHtmlToSections, getReserveUrl } from './utils';
 import {
   composeLoadables,
   Loadable,

@@ -1,5 +1,6 @@
 import { keepPreviousData } from '@tanstack/react-query';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type DefinedType = {} | null;
 
 export type Loadable<TData extends DefinedType> =

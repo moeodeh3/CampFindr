@@ -1,7 +1,7 @@
 import { Loadable, onLoadable } from '../../hooks/api/query';
 import { CampCard } from './camp-card';
 import { AvailabilityResponse } from '@packages/types';
-import { FilterWithDropdown } from './filter';
+import { FilterWithDropdown } from './filter-button';
 import LoadingAnimation from '../../../public/loading-animation.json';
 import { Lottie } from '../lottie';
 
@@ -9,12 +9,14 @@ interface SearchResultsProps {
   availabilityLoadable: Loadable<AvailabilityResponse[]>;
   isSearching: boolean;
   onCardPressed: (mapId: number) => void;
+  onFilterPressed: () => void;
 }
 
 export function SearchResults({
   availabilityLoadable,
   isSearching,
   onCardPressed,
+  onFilterPressed,
 }: SearchResultsProps) {
   return onLoadable(availabilityLoadable)(
     () =>
@@ -36,12 +38,12 @@ export function SearchResults({
               <p className="text-primary text-lg font-semibold">
                 {availabilityData ? availabilityData.length : 0} Results
               </p>
-              <FilterWithDropdown />
+              <FilterWithDropdown onFilterPressed={onFilterPressed} />
             </div>
           </div>
 
           <div className="flex flex-wrap justify-start gap-8 px-32">
-            {availabilityData.map((availability) => (
+            {availabilityData?.map((availability) => (
               <CampCard
                 key={availability.mapId}
                 mapId={availability.mapId}
